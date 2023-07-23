@@ -56,6 +56,9 @@ class Agent2(Agent):
     '''
     Only a possible implementation of Agent2: The key to capture the target might be to always take the shortest path. Hence, if there
     are more than 1 such paths, the agent should stay at where the shortest paths intersect.
+
+    Note: a possible improvement is to consider the targets' possible next locations, and choose the shortest path that leads to the
+    most possible next locations of the target.
     '''
 
     def __init__(self, graph: Graph, target: Target) -> None:
