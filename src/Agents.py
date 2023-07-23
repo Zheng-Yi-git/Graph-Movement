@@ -35,7 +35,7 @@ class Agent1(Agent):
             path.append(s)
 
             if s == self.target.location:
-                return path[1]
+                return path[1] if len(path) > 1 else path[0]
             
             for i in self.graph.node_list[s].neighbor_list:
                 index = i - 1
