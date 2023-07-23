@@ -55,7 +55,37 @@ class Agent1(Agent):
 class Agent2(Agent):
     '''
     Only a possible implementation of Agent2: The key to capture the target might be to always take the shortest path. Hence, if there
-    are more than 1 such paths, the agent should stay at the current location and wait for the target to come.
+    are more than 1 such paths, the agent should stay at where the shortest paths intersect.
     '''
+
+    def __init__(self, graph: Graph, target: Target) -> None:
+        super().__init__(graph)
+        self.target = target
+
+    def _find_shortest_path(self):
+        # use BFS to find the shortest path, if there are more than 1 shortest paths
+        visited = [False] * 40
+        queue = []
+        queue.append((self.location, [])) # (node, path)
+        visited[self.location] = True
+        
+        shortest_paths = []
+
+        while queue:
+            s, path = queue.pop(0)
+            path.append(s)
+
+            if s == self.target.location:
+                shortest_paths.append(path[1] if len(path) > 1 else path[0])
+            
+            for i in self.graph.node_list[s].neighbor_list:
+                index = i - 1
+                
+                if visited[index] == False:
+                    queue.append((index, path + [index]))
+                    visited[index] = True
+
+
+        
 
 
