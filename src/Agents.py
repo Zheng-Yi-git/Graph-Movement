@@ -63,7 +63,7 @@ class Agent2(Agent):
         self.target = target
 
     def _find_shortest_path(self):
-        # use BFS to find the shortest path, if there are more than 1 shortest paths
+        # use BFS to find the shortest path, if there are more than 1 shortest paths, reach the intersection of them
         visited = [False] * 40
         queue = []
         queue.append((self.location, [])) # (node, path)
@@ -84,6 +84,20 @@ class Agent2(Agent):
                 if visited[index] == False:
                     queue.append((index, path + [index]))
                     visited[index] = True
+
+        if len(shortest_paths) == 1:
+            return shortest_paths[0][0]
+
+        # find the intersection of the shortest paths
+        path_to_intersection = shortest_paths[0]
+        for path in shortest_paths[1:]:
+            for node in path:
+                if node in path_to_intersection:
+                    path_to_intersection = path_to_intersection[:path_to_intersection.index(node) + 1]
+                    break
+
+        return path_to_intersection[0]
+        
 
 
         
