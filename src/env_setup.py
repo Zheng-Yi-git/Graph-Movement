@@ -38,6 +38,17 @@ class Graph(object):
             self.node_list.append(node)
 
 
+class Target(object):
+    def __init__(self, graph: Graph):
+        self.location = np.random.randint(0, 41)
+        self.neighbors = graph.node_list[self.location].neighbor_list
+
+    def move(self):
+        self.location = np.random.choice(self.neighbors) - 1
+        self.neighbors = graph.node_list[self.location].neighbor_list
+
+
+
 if __name__ == "__main__":
     g = Graph()
     g.initialize()
