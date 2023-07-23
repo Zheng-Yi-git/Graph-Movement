@@ -39,8 +39,8 @@ class Graph(object):
 
 
 class Target(object):
-    def __init__(self, graph: Graph):
-        self.location = np.random.randint(0, 41)
+    def __init__(self, graph: Graph, init_location: int):
+        self.location = init_location
         self.neighbors = graph.node_list[self.location].neighbor_list
         self.graph = graph
 
