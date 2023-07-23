@@ -42,10 +42,11 @@ class Target(object):
     def __init__(self, graph: Graph):
         self.location = np.random.randint(0, 41)
         self.neighbors = graph.node_list[self.location].neighbor_list
+        self.graph = graph
 
     def move(self):
         self.location = np.random.choice(self.neighbors) - 1
-        self.neighbors = graph.node_list[self.location].neighbor_list
+        self.neighbors = self.graph.node_list[self.location].neighbor_list
 
 
 
