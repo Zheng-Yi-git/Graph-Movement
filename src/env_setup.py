@@ -46,8 +46,9 @@ class Target(object):
 
     def move(self):
         self.location = np.random.choice(self.neighbors) - 1
-        self.neighbors = [x - 1 for x in self.graph.node_list[self.location].neighbor_list]
-
+        self.neighbors = [
+            x - 1 for x in self.graph.node_list[self.location].neighbor_list
+        ]
 
 
 if __name__ == "__main__":
