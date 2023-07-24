@@ -84,7 +84,7 @@ class Agent2(Agent):
                 if visited[index] == False:
                     queue.append((index, path + [index]))
                     visited[index] = True
-                    
+
         if len(shortest_paths) == 0:
             return 0, 1
         else:
