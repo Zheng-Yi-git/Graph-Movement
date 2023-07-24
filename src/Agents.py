@@ -114,6 +114,20 @@ class Agent2(Agent):
         self.location = next_location
         self.neighbors = [x - 1 for x in self.graph.node_list[self.location].neighbor_list]
 
+class Agent3(Agent):
+    def __init__(self, graph: Graph, *args, **kwargs) -> None:
+        super().__init__(graph)
+
+    def examine(self):
+        return self.location
+
+    def move(self):
+        self.location = self.examine()
+
+class Agent4(Agent):
+    def __init__(self, graph: Graph, *args, **kwargs) -> None:
+        super().__init__(graph)
+
 
             
         
