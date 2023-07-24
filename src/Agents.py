@@ -61,21 +61,59 @@ class Agent2(Agent):
         super().__init__(graph)
         self.target = target
 
-    def _find_shortest_path(self):
-        # use BFS to find the shortest path, if there are more than 1 shortest paths, reach the intersection of them
+    # def _find_shortest_path(self):
+    #     # use BFS to find the shortest path, if there are more than 1 shortest paths, reach the intersection of them
+    #     visited = [False] * 40
+    #     queue = []
+    #     queue.append((self.location, [])) # (node, path)
+    #     visited[self.location] = True
+        
+    #     shortest_paths = []
+
+    #     while queue:
+    #         s, path = queue.pop(0)
+    #         path.append(s)
+
+    #         if s == self.target.location:
+    #             shortest_paths.append(path[1] if len(path) > 1 else path[0])
+            
+    #         for i in self.graph.node_list[s].neighbor_list:
+    #             index = i - 1
+                
+    #             if visited[index] == False:
+    #                 queue.append((index, path + [index]))
+    #                 visited[index] = True
+
+    #     if len(shortest_paths) == 1:
+    #         return shortest_paths[0][0]
+
+    #     # find the intersection of the shortest paths
+    #     path_to_intersection = shortest_paths[0]
+    #     for path in shortest_paths[1:]:
+    #         for node in path:
+    #             if node in path_to_intersection:
+    #                 path_to_intersection = path_to_intersection[:path_to_intersection.index(node) + 1]
+    #                 break
+
+    #     return path_to_intersection[0]
+
+    def _BFS(self, curr_location, target_location):
+        '''
+        return the length of the shortest path from curr_location to target_location and the number of shortest paths
+        '''
         visited = [False] * 40
         queue = []
-        queue.append((self.location, [])) # (node, path)
-        visited[self.location] = True
+        queue.append((curr_location, []))
+        visited[curr_location] = True
         
         shortest_paths = []
-
         while queue:
             s, path = queue.pop(0)
             path.append(s)
 
-            if s == self.target.location:
-                shortest_paths.append(path[1] if len(path) > 1 else path[0])
+            if s == target_location and (len(shortest_paths) == 0 or len(path) == len(shortest_paths[0])):
+                shortest_paths.append(path)
+                print(path)
             
             for i in self.graph.node_list[s].neighbor_list:
                 index = i - 1
@@ -84,18 +122,29 @@ class Agent2(Agent):
                     queue.append((index, path + [index]))
                     visited[index] = True
 
-        if len(shortest_paths) == 1:
-            return shortest_paths[0][0]
+        return len(shortest_paths[0]), len(shortest_paths)
 
-        # find the intersection of the shortest paths
-        path_to_intersection = shortest_paths[0]
-        for path in shortest_paths[1:]:
-            for node in path:
-                if node in path_to_intersection:
-                    path_to_intersection = path_to_intersection[:path_to_intersection.index(node) + 1]
-                    break
+    def _get_path(self):
+        '''
+        find the shortest expected distance from agent's next location to target's next location, return the next location
+        '''
+        expected_distances: dict = {}
+        for next_location in zip(self.neighbors, self.location):
+            expected_distances[next_location] = 0 # expected_distance
+            num_shortest_paths = 0
+            total_shortest_path_length = 0
+            for target_location in self.target.neighbors:
+                shortest_path_length, num_shortest_paths = self._BFS(next_location, target_location)
+                total_shortest_path_length += shortest_path_length * num_shortest_paths
+                num_shortest_paths += num_shortest_paths
 
-        return path_to_intersection[0]
+            expected_distances[next_location] = total_shortest_path_length / num_shortest_paths
+
+        # find the next location with smallest expected distance
+        return min(expected_distances, key=expected_distances.get)[0]
+
+
+            
         
 
 
