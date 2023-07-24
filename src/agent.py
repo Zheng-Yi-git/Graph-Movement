@@ -97,7 +97,7 @@ class Agent2(Agent):
         if len(shortest_paths) == 0:
             return 1, 1
         else:
-            return len(shortest_paths[0]), len(shortest_paths)
+            return len(shortest_paths[0]) - 1, len(shortest_paths)
 
     def _get_path(self):
         """
