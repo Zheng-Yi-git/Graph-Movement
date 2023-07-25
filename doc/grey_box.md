@@ -36,7 +36,7 @@ Next, the method adds 10 additional edges to the graph. It randomly selects two 
 
 Finally, the method creates instances of the Node class for each node and assigns their neighbor list and degree. The neighbor list is obtained from the neighbor_dict dictionary, and the degree of each node is calculated as the length of its neighbor list. These instances are added to the node_list attribute of the Graph class.
 
-The time complexity of this method is roughly O(n), with constant factors slightly around 2. The space complexity is O(n).
+The time complexity of this method is roughly O(n), with constant factors slightly smaller than 2. The space complexity is O(n).
 
 # B)
 First of all, we can consider the movement of the target as a finite irreducible Markov chain since the space is finite and the target can move from one location to another. The target is also irreducible since there exists at least one path from any location to any other location. Therefore, all nodes are positive recurrent.
