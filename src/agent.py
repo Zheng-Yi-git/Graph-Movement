@@ -1,99 +1,68 @@
-from env_setup import Graph, Target
-import numpy as np
+# -*- coding: utf-8 -*-
+from env_setup import Graph
 
 
-# the template for agents
-class Agent:
-    def __init__(self, graph: Graph) -> None:
-        self.location = np.random.randint(0, 40)
-        self.graph = graph
-        self.neighbors = [
-            x - 1 for x in self.graph.node_list[self.location].neighbor_list
-        ]
+class GraphAgent0(Graph):
+    def __init__(self):
+        super().__init__()
 
-    def move(self):
-        pass
-
-    def examine(self):
+    def move_agent(self):
         pass
 
 
-class Agent0(Agent):
-    def __init__(self, graph: Graph, target: Target) -> None:
-        super().__init__(graph)
-        self.target = target
-
-
-class Agent1(Agent):
-    def __init__(self, graph: Graph, target: Target) -> None:
-        super().__init__(graph)
-        self.target = target
+class GraphAgent1(Graph):
+    def __init__(self):
+        super().__init__()
 
     def _find_shortest_path(self):
         # use BFS to get the shortest path from current location to target, then return the next location
-        visited = [False] * 40
+        visited = [False] * self.node_num
         queue = []
-        queue.append((self.location, []))  # (node, path)
-        visited[self.location] = True
+        queue.append((self.agent_name, []))  # (node name, path using node name)
+        visited[self.name_id_dict[self.agent_name]] = True
+
         while queue:
             s, path = queue.pop(0)
             path.append(s)
-
-            if s == self.target.location:
+            if s == self.target_name:
                 return path[1] if len(path) > 1 else path[0]
-
-            for i in self.graph.node_list[s].neighbor_list:
-                index = i - 1
-
-                if visited[index] == False:
-                    queue.append((index, path + [index]))
-                    visited[index] = True
-
+            for i in self.node_list[self.name_id_dict[s]].neighbor_list:
+                if not visited[self.name_id_dict[i]]:
+                    queue.append((i, path + [i]))
+                    visited[self.name_id_dict[i]] = True
         return -1
 
-    def move(self):
-        next_location = self._find_shortest_path()
-        self.location = next_location
-        self.neighbors = [
-            x - 1 for x in self.graph.node_list[self.location].neighbor_list
-        ]
+    def move_agent(self):
+        self.node_list[self.name_id_dict[self.agent_name]].status = 0
+        self.agent_name = self._find_shortest_path()
+        self.node_list[self.name_id_dict[self.agent_name]].status = 1
 
 
-class Agent2(Agent):
-    """
-    A possible strategy for agent 2: always take the path with smallest expected distance to the target's next location
-    """
+class GraphAgent2(Graph):
+    def __init__(self):
+        super().__init__()
 
-    def __init__(self, graph: Graph, target: Target) -> None:
-        super().__init__(graph)
-        self.target = target
-
-    def _BFS(self, curr_location, target_location):
+    def _BFS(self, agent_name, target_name):
         """
         return the length of the shortest path from curr_location to target_location and the number of shortest paths
         """
         visited = [False] * 40
         queue = []
-        queue.append((curr_location, []))
-        visited[curr_location] = True
-
+        queue.append((agent_name, []))
+        visited[self.name_id_dict[agent_name]] = True
         shortest_paths = []
+
         while queue:
             s, path = queue.pop(0)
             path.append(s)
-
-            if s == target_location and (
+            if s == target_name and (
                 len(shortest_paths) == 0 or len(path) == len(shortest_paths[0])
             ):
                 shortest_paths.append(path)
-
-            for i in self.graph.node_list[s].neighbor_list:
-                index = i - 1
-
-                if visited[index] == False:
-                    queue.append((index, path + [index]))
-                    visited[index] = True
-
+            for i in self.node_list[self.name_id_dict[s]].neighbor_list:
+                if not visited[self.name_id_dict[i]]:
+                    queue.append((i, path + [i]))
+                    visited[self.name_id_dict[i]] = True
         if len(shortest_paths) == 0:
             return 1, 1
         else:
@@ -104,11 +73,17 @@ class Agent2(Agent):
         find the shortest expected distance from agent's next location to target's next location, return the next location
         """
         expected_distances: dict = {}
-        for next_location in self.neighbors + [self.location]:
+
+        for next_location in self.node_list[
+            self.name_id_dict[self.agent_name]
+        ].neighbor_list + [self.agent_name]:
             expected_distances[next_location] = 0  # expected_distance
             num_shortest_paths = 0
             total_shortest_path_length = 0
-            for target_location in self.target.neighbors:
+
+            for target_location in self.node_list[
+                self.name_id_dict[self.target_name]
+            ].neighbor_list:
                 shortest_path_length, num_shortest_paths = self._BFS(
                     next_location, target_location
                 )
@@ -122,25 +97,7 @@ class Agent2(Agent):
         # find the next location with smallest expected distance
         return min(expected_distances, key=expected_distances.get)
 
-    def move(self):
-        next_location = self._get_path()
-        self.location = next_location
-        self.neighbors = [
-            x - 1 for x in self.graph.node_list[self.location].neighbor_list
-        ]
-
-
-class Agent3(Agent):
-    def __init__(self, graph: Graph, *args, **kwargs) -> None:
-        super().__init__(graph)
-
-    def examine(self):
-        return self.location
-
-    def move(self):
-        self.location = self.examine()
-
-
-class Agent4(Agent):
-    def __init__(self, graph: Graph, *args, **kwargs) -> None:
-        super().__init__(graph)
+    def move_agent(self):
+        self.node_list[self.name_id_dict[self.agent_name]].status = 0
+        self.agent_name = self._get_path()
+        self.node_list[self.name_id_dict[self.agent_name]].status = 1
