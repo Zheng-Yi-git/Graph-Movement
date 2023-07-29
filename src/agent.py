@@ -179,11 +179,11 @@ class GraphAgent4(Graph):
             node.belief = self.prediction(len(self.agent_history) - 1, node.name)
             # print(node.name, node.belief)
 
-        # print the sum of belief
-        sum_belief = 0
-        for node in self.node_list:
-            sum_belief += node.belief
-        print(sum_belief)
+        # # print the sum of belief
+        # sum_belief = 0
+        # for node in self.node_list:
+        #     sum_belief += node.belief
+        # print(sum_belief)
         # # 统计最大的belief的node数量
         # max_belief = max(self.node_list, key=lambda x: x.belief).belief
         # max_belief_num = 0
@@ -226,10 +226,17 @@ class GraphAgent5(Graph):
                     self.filter(agent_event - 1, neighbor)
                 )
 
-            denominator = self.prediction(
-                agent_event - 1,
-                self.node_list[self.name_id_dict[self.agent_history[agent_event]]].name,
-            )
+            denominator = 0
+            for node in self.node_list:
+                if node.name == self.agent_history[agent_event]:
+                    pass
+                else:
+                    for neighbor in node.neighbor_list:
+                        denominator += (
+                            self.filter(agent_event - 1, neighbor)
+                            * 1
+                            / self.node_list[self.name_id_dict[neighbor]].degree
+                        )
             return numerator / (denominator)
 
     @lru_cache(maxsize=1000)
@@ -300,10 +307,17 @@ class GraphAgent6(Graph):
                     self.filter(agent_event - 1, neighbor)
                 )
 
-            denominator = self.prediction(
-                agent_event - 1,
-                self.node_list[self.name_id_dict[self.agent_history[agent_event]]].name,
-            )
+            denominator = 0
+            for node in self.node_list:
+                if node.name == self.agent_history[agent_event]:
+                    pass
+                else:
+                    for neighbor in node.neighbor_list:
+                        denominator += (
+                            self.filter(agent_event - 1, neighbor)
+                            * 1
+                            / self.node_list[self.name_id_dict[neighbor]].degree
+                        )
             return numerator / (denominator)
 
     @lru_cache(maxsize=1000)
@@ -382,10 +396,17 @@ class GraphAgent7(Graph):
                     self.filter(agent_event - 1, neighbor)
                 )
 
-            denominator = self.prediction(
-                agent_event - 1,
-                self.node_list[self.name_id_dict[self.agent_history[agent_event]]].name,
-            )
+            denominator = 0
+            for node in self.node_list:
+                if node.name == self.agent_history[agent_event]:
+                    pass
+                else:
+                    for neighbor in node.neighbor_list:
+                        denominator += (
+                            self.filter(agent_event - 1, neighbor)
+                            * 1
+                            / self.node_list[self.name_id_dict[neighbor]].degree
+                        )
             return numerator / (denominator)
 
     @lru_cache(maxsize=1000)
