@@ -108,11 +108,15 @@ class GraphAgent2(Graph):
 class GraphAgent4(Graph):
     def __init__(self):
         super().__init__()
+    
+    def initialize(self, random_seed=0):
+        super().initialize(random_seed)
         # initialize the belief of each node to be equal and sum to 1
         for node in self.node_list:
             node.belief = 1 / self.node_num
         self.agent_history = []  # record the agent's location history
         self.agent_history.append(self.agent_name)
+    
 
     @lru_cache(maxsize=1000)
     def filter(self, agent_event, target_name):
@@ -125,9 +129,9 @@ class GraphAgent4(Graph):
             for neighbor in self.node_list[
                 self.name_id_dict[target_name]
             ].neighbor_list:
-                print((
-                    self.filter(agent_event - 1, neighbor)
-                ))
+                # print((
+                #     self.filter(agent_event - 1, neighbor)
+                # ))
                 numerator += 1 / (self.node_list[self.name_id_dict[neighbor]].degree) * (
                     self.filter(agent_event - 1, neighbor)
                 )
@@ -136,7 +140,7 @@ class GraphAgent4(Graph):
                 agent_event - 1,
                 self.node_list[self.name_id_dict[self.agent_history[agent_event]]].name,
             )
-            return numerator / denominator
+            return numerator / (denominator * 39)
 
     @lru_cache(maxsize=1000)
     def prediction(self, agent_event, target_name):
@@ -154,7 +158,20 @@ class GraphAgent4(Graph):
         self.node_list[self.name_id_dict[self.agent_name]].status = 0
         for node in self.node_list:
             node.belief = self.prediction(len(self.agent_history) - 1, node.name)
-            print(node.name, node.belief)
+            # print(node.name, node.belief)
+
+        # # print the sum of belief
+        # sum_belief = 0
+        # for node in self.node_list:
+        #     sum_belief += node.belief
+        # print(sum_belief)
+        # # 统计最大的belief的node数量
+        # max_belief = max(self.node_list, key=lambda x: x.belief).belief
+        # max_belief_num = 0
+        # for node in self.node_list:
+        #     if node.belief == max_belief:
+        #         max_belief_num += 1
+        # print(max_belief_num)
         self.agent_name = max(self.node_list, key=lambda x: x.belief).name
         self.agent_history.append(self.agent_name)
         self.node_list[self.name_id_dict[self.agent_name]].status = 1
