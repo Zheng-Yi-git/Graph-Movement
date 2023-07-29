@@ -108,6 +108,9 @@ class GraphAgent2(Graph):
 class GraphAgent4(Graph):
     def __init__(self):
         super().__init__()
+
+    def initialize(self, random_seed=0):
+        super().initialize(random_seed)
         # initialize the belief of each node to be equal and sum to 1
         for node in self.node_list:
             node.belief = 1 / self.node_num
@@ -125,11 +128,11 @@ class GraphAgent4(Graph):
             for neighbor in self.node_list[
                 self.name_id_dict[target_name]
             ].neighbor_list:
-                print((
-                    self.filter(agent_event - 1, neighbor)
-                ))
-                numerator += 1 / (self.node_list[self.name_id_dict[neighbor]].degree) * (
-                    self.filter(agent_event - 1, neighbor)
+                print((self.filter(agent_event - 1, neighbor)))
+                numerator += (
+                    1
+                    / (self.node_list[self.name_id_dict[neighbor]].degree)
+                    * (self.filter(agent_event - 1, neighbor))
                 )
 
             denominator = self.prediction(
@@ -144,11 +147,16 @@ class GraphAgent4(Graph):
             return 1 / self.node_num
         belief = 0
         for neighbor in self.node_list[self.name_id_dict[target_name]].neighbor_list:
-            belief += self.filter(agent_event, neighbor) * 1 / self.node_list[
-                self.name_id_dict[neighbor]
-            ].degree
+            belief += (
+                self.filter(agent_event, neighbor)
+                * 1
+                / self.node_list[self.name_id_dict[neighbor]].degree
+            )
 
         return belief
+
+    def plot(self, step, save_dir="../results/figs/", plot_belief=True):
+        super().plot(step, save_dir, plot_belief)
 
     def move_agent(self):
         self.node_list[self.name_id_dict[self.agent_name]].status = 0
