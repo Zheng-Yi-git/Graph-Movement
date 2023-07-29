@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from env_setup import Graph
+from functools import lru_cache
+import numpy as np
 
 
 class GraphAgent0(Graph):
@@ -100,4 +102,59 @@ class GraphAgent2(Graph):
     def move_agent(self):
         self.node_list[self.name_id_dict[self.agent_name]].status = 0
         self.agent_name = self._get_path()
+        self.node_list[self.name_id_dict[self.agent_name]].status = 1
+
+
+class GraphAgent4(Graph):
+    def __init__(self):
+        super().__init__()
+        # initialize the belief of each node to be equal and sum to 1
+        for node in self.node_list:
+            node.belief = 1 / self.node_num
+        self.agent_history = []  # record the agent's location history
+        self.agent_history.append(self.agent_name)
+
+    @lru_cache(maxsize=1000)
+    def filter(self, agent_event, target_name):
+        if agent_event == 0:
+            return 1 / self.node_num
+        else:
+            if self.agent_history[agent_event] == target_name:
+                return 0
+            numerator = 0
+            for neighbor in self.node_list[
+                self.name_id_dict[target_name]
+            ].neighbor_list:
+                print((
+                    self.filter(agent_event - 1, neighbor)
+                ))
+                numerator += 1 / (self.node_list[self.name_id_dict[neighbor]].degree) * (
+                    self.filter(agent_event - 1, neighbor)
+                )
+
+            denominator = self.prediction(
+                agent_event - 1,
+                self.node_list[self.name_id_dict[self.agent_history[agent_event]]].name,
+            )
+            return numerator / denominator
+
+    @lru_cache(maxsize=1000)
+    def prediction(self, agent_event, target_name):
+        if agent_event == 0:
+            return 1 / self.node_num
+        belief = 0
+        for neighbor in self.node_list[self.name_id_dict[target_name]].neighbor_list:
+            belief += self.filter(agent_event, neighbor) * 1 / self.node_list[
+                self.name_id_dict[neighbor]
+            ].degree
+
+        return belief
+
+    def move_agent(self):
+        self.node_list[self.name_id_dict[self.agent_name]].status = 0
+        for node in self.node_list:
+            node.belief = self.prediction(len(self.agent_history) - 1, node.name)
+            print(node.name, node.belief)
+        self.agent_name = max(self.node_list, key=lambda x: x.belief).name
+        self.agent_history.append(self.agent_name)
         self.node_list[self.name_id_dict[self.agent_name]].status = 1
