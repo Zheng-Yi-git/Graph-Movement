@@ -50,13 +50,13 @@ class GraphAgent2(Graph):
         """
         visited = [False] * 40
         queue = []
-        queue.append((agent_name, []))
+        queue.append((agent_name, [self.agent_name]))
         visited[self.name_id_dict[agent_name]] = True
         shortest_paths = []
 
         while queue:
             s, path = queue.pop(0)
-            path.append(s)
+            # path.append(s)
             if s == target_name and (
                 len(shortest_paths) == 0 or len(path) == len(shortest_paths[0])
             ):
@@ -66,21 +66,29 @@ class GraphAgent2(Graph):
                     queue.append((i, path + [i]))
                     visited[self.name_id_dict[i]] = True
         if len(shortest_paths) == 0:
-            return 1, 1
+            return 0, 0, None
+        elif len(shortest_paths) == 1:
+            return len(shortest_paths[0]) - 1, 1, shortest_paths[0]
         else:
-            return len(shortest_paths[0]) - 1, len(shortest_paths)
+            return len(shortest_paths[0]) - 1, len(shortest_paths), None
 
     def _get_path(self):
         """
         find the shortest expected distance from agent's next location to target's next location, return the next location
         """
+        # first we should check if there exists more than one shortest path from agent to target
+        shortest_path_length, num_shortest_paths, shortest_path = self._BFS(
+            self.agent_name, self.target_name
+        )
+        if num_shortest_paths == 1:
+            return shortest_path[1] if shortest_path_length > 0 else shortest_path[0]
         expected_distances: dict = {}
 
         for next_location in self.node_list[
             self.name_id_dict[self.agent_name]
         ].neighbor_list + [self.agent_name]:
             expected_distances[next_location] = 0  # expected_distance
-            num_shortest_paths = 0
+            total_num_shortest_paths = 0
             total_shortest_path_length = 0
 
             for target_location in self.node_list[
@@ -90,10 +98,10 @@ class GraphAgent2(Graph):
                     next_location, target_location
                 )
                 total_shortest_path_length += shortest_path_length * num_shortest_paths
-                num_shortest_paths += num_shortest_paths
+                total_num_shortest_paths += num_shortest_paths
 
             expected_distances[next_location] = (
-                total_shortest_path_length / num_shortest_paths
+                total_shortest_path_length / total_num_shortest_paths
             )
 
         # find the next location with smallest expected distance
