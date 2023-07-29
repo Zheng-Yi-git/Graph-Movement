@@ -336,3 +336,67 @@ class GraphAgent6(Graph):
         self.agent_name = next_location
         self.agent_history.append(self.agent_name)
         self.node_list[self.name_id_dict[self.agent_name]].status = 1
+
+class GraphAgent7(Graph):
+    def __init__(self):
+        super().__init__()
+    
+    def initialize(self, random_seed=0):
+        super().initialize(random_seed)
+        # initialize the belief of each node to be equal and sum to 1
+        for node in self.node_list:
+            node.belief = 1 / self.node_num
+        self.agent_history = []  # record the agent's location history
+        self.agent_history.append(self.agent_name)
+    
+
+    @lru_cache(maxsize=1000)
+    def filter(self, agent_event, target_name):
+        if agent_event == 0:
+            return 1 / self.node_num
+        else:
+            if self.agent_history[agent_event] == target_name:
+                return 0
+            numerator = 0
+            for neighbor in self.node_list[
+                self.name_id_dict[target_name]
+            ].neighbor_list:
+                # print((
+                #     self.filter(agent_event - 1, neighbor)
+                # ))
+                numerator += 1 / (self.node_list[self.name_id_dict[neighbor]].degree) * (
+                    self.filter(agent_event - 1, neighbor)
+                )
+
+            denominator = self.prediction(
+                agent_event - 1,
+                self.node_list[self.name_id_dict[self.agent_history[agent_event]]].name,
+            )
+            return numerator / (denominator)
+
+    @lru_cache(maxsize=1000)
+    def prediction(self, agent_event, target_name):
+        if agent_event == 0:
+            return 1 / self.node_num
+        belief = 0
+        for neighbor in self.node_list[self.name_id_dict[target_name]].neighbor_list:
+            belief += (
+                self.filter(agent_event, neighbor)
+                * 1
+                / self.node_list[self.name_id_dict[neighbor]].degree
+            )
+
+        return belief
+    
+    def plot(self, step, save_dir="../results/figs/", plot_belief=True):
+        super().plot(step, save_dir, plot_belief)
+
+    def _find_shortest_path(self, target_name):
+        # use BFS to get the shortest path from current location to target, then return the next location
+        visited = [False] * self.node_num
+        queue = []
+        queue.append((self.agent_name, []))  # (node name, path using node name)
+        visited[self.name_id_dict[self.agent_name]] = True
+
+        while queue:
+            s, path = queue
