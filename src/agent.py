@@ -112,10 +112,19 @@ class GraphAgent2(Graph):
         self.agent_name = self._get_path()
         self.node_list[self.name_id_dict[self.agent_name]].status = 1
 
+
+class GraphAgent3(Graph):
+    def __init__(self):
+        super().__init__()
+
+    def move_agent(self):
+        pass
+
+
 class GraphAgent4(Graph):
     def __init__(self):
         super().__init__()
-    
+
     def initialize(self, random_seed=0):
         super().initialize(random_seed)
         # initialize the belief of each node to be equal and sum to 1
@@ -123,7 +132,6 @@ class GraphAgent4(Graph):
             node.belief = 1 / self.node_num
         self.agent_history = []  # record the agent's location history
         self.agent_history.append(self.agent_name)
-    
 
     @lru_cache(maxsize=1000)
     def filter(self, agent_event, target_name):
@@ -139,8 +147,10 @@ class GraphAgent4(Graph):
                 # print((
                 #     self.filter(agent_event - 1, neighbor)
                 # ))
-                numerator += 1 / (self.node_list[self.name_id_dict[neighbor]].degree) * (
-                    self.filter(agent_event - 1, neighbor)
+                numerator += (
+                    1
+                    / (self.node_list[self.name_id_dict[neighbor]].degree)
+                    * (self.filter(agent_event - 1, neighbor))
                 )
 
             denominator = 0
@@ -184,7 +194,7 @@ class GraphAgent4(Graph):
         # for node in self.node_list:
         #     sum_belief += node.belief
         # print(sum_belief)
-        # # 统计最大的belief的node数量
+        # # count the number of nodes with the highest belief
         # max_belief = max(self.node_list, key=lambda x: x.belief).belief
         # max_belief_num = 0
         # for node in self.node_list:
@@ -195,10 +205,11 @@ class GraphAgent4(Graph):
         self.agent_history.append(self.agent_name)
         self.node_list[self.name_id_dict[self.agent_name]].status = 1
 
+
 class GraphAgent5(Graph):
     def __init__(self):
         super().__init__()
-    
+
     def initialize(self, random_seed=0):
         super().initialize(random_seed)
         # initialize the belief of each node to be equal and sum to 1
@@ -206,7 +217,6 @@ class GraphAgent5(Graph):
             node.belief = 1 / self.node_num
         self.agent_history = []  # record the agent's location history
         self.agent_history.append(self.agent_name)
-    
 
     @lru_cache(maxsize=1000)
     def filter(self, agent_event, target_name):
@@ -222,8 +232,10 @@ class GraphAgent5(Graph):
                 # print((
                 #     self.filter(agent_event - 1, neighbor)
                 # ))
-                numerator += 1 / (self.node_list[self.name_id_dict[neighbor]].degree) * (
-                    self.filter(agent_event - 1, neighbor)
+                numerator += (
+                    1
+                    / (self.node_list[self.name_id_dict[neighbor]].degree)
+                    * (self.filter(agent_event - 1, neighbor))
                 )
 
             denominator = 0
@@ -270,16 +282,22 @@ class GraphAgent5(Graph):
         max_neighbor_belief = 0
         for node in max_belief_nodes:
             for neighbor in node.neighbor_list:
-                if self.node_list[self.name_id_dict[neighbor]].belief > max_neighbor_belief:
-                    max_neighbor_belief = self.node_list[self.name_id_dict[neighbor]].belief
+                if (
+                    self.node_list[self.name_id_dict[neighbor]].belief
+                    > max_neighbor_belief
+                ):
+                    max_neighbor_belief = self.node_list[
+                        self.name_id_dict[neighbor]
+                    ].belief
                     self.agent_name = node.name
         self.agent_history.append(self.agent_name)
         self.node_list[self.name_id_dict[self.agent_name]].status = 1
 
+
 class GraphAgent6(Graph):
     def __init__(self):
         super().__init__()
-    
+
     def initialize(self, random_seed=0):
         super().initialize(random_seed)
         # initialize the belief of each node to be equal and sum to 1
@@ -287,7 +305,6 @@ class GraphAgent6(Graph):
             node.belief = 1 / self.node_num
         self.agent_history = []  # record the agent's location history
         self.agent_history.append(self.agent_name)
-    
 
     @lru_cache(maxsize=1000)
     def filter(self, agent_event, target_name):
@@ -303,8 +320,10 @@ class GraphAgent6(Graph):
                 # print((
                 #     self.filter(agent_event - 1, neighbor)
                 # ))
-                numerator += 1 / (self.node_list[self.name_id_dict[neighbor]].degree) * (
-                    self.filter(agent_event - 1, neighbor)
+                numerator += (
+                    1
+                    / (self.node_list[self.name_id_dict[neighbor]].degree)
+                    * (self.filter(agent_event - 1, neighbor))
                 )
 
             denominator = 0
@@ -333,7 +352,7 @@ class GraphAgent6(Graph):
             )
 
         return belief
-    
+
     def plot(self, step, save_dir="../results/figs/", plot_belief=True):
         super().plot(step, save_dir, plot_belief)
 
@@ -354,21 +373,24 @@ class GraphAgent6(Graph):
                     queue.append((i, path + [i]))
                     visited[self.name_id_dict[i]] = True
         return -1
-    
+
     def move_agent(self):
         self.node_list[self.name_id_dict[self.agent_name]].status = 0
         for node in self.node_list:
             node.belief = self.prediction(len(self.agent_history) - 1, node.name)
 
-        next_location = self._find_shortest_path(max(self.node_list, key=lambda x: x.belief).name)
+        next_location = self._find_shortest_path(
+            max(self.node_list, key=lambda x: x.belief).name
+        )
         self.agent_name = next_location
         self.agent_history.append(self.agent_name)
         self.node_list[self.name_id_dict[self.agent_name]].status = 1
 
+
 class GraphAgent7(Graph):
     def __init__(self):
         super().__init__()
-    
+
     def initialize(self, random_seed=0):
         super().initialize(random_seed)
         # initialize the belief of each node to be equal and sum to 1
@@ -376,7 +398,6 @@ class GraphAgent7(Graph):
             node.belief = 1 / self.node_num
         self.agent_history = []  # record the agent's location history
         self.agent_history.append(self.agent_name)
-    
 
     @lru_cache(maxsize=1000)
     def filter(self, agent_event, target_name):
@@ -392,8 +413,10 @@ class GraphAgent7(Graph):
                 # print((
                 #     self.filter(agent_event - 1, neighbor)
                 # ))
-                numerator += 1 / (self.node_list[self.name_id_dict[neighbor]].degree) * (
-                    self.filter(agent_event - 1, neighbor)
+                numerator += (
+                    1
+                    / (self.node_list[self.name_id_dict[neighbor]].degree)
+                    * (self.filter(agent_event - 1, neighbor))
                 )
 
             denominator = 0
@@ -422,7 +445,7 @@ class GraphAgent7(Graph):
             )
 
         return belief
-    
+
     def plot(self, step, save_dir="../results/figs/", plot_belief=True):
         super().plot(step, save_dir, plot_belief)
 
@@ -488,7 +511,7 @@ class GraphAgent7(Graph):
 
         # find the next location with smallest expected distance
         return min(expected_distances, key=expected_distances.get)
-    
+
     def move_agent(self):
         self.node_list[self.name_id_dict[self.agent_name]].status = 0
         for node in self.node_list:
