@@ -108,11 +108,7 @@ class GraphAgent2(Graph):
 class GraphAgent4(Graph):
     def __init__(self):
         super().__init__()
-<<<<<<< HEAD
     
-=======
-
->>>>>>> 1ddfc11292a9792de7d02d6fb01049ef0f3d77d2
     def initialize(self, random_seed=0):
         super().initialize(random_seed)
         # initialize the belief of each node to be equal and sum to 1
