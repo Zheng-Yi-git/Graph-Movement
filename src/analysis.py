@@ -58,10 +58,11 @@ class Simulation(object):
                 if verbose:
                     print("============== {} ==============".format(Agent.__name__))
                 agent = Agent()
-                agent.initialize()
+                agent.initialize(random_seed=i)
                 num_steps = 0
                 print(agent.agent_name)
                 print(agent.target_name)
+                print(agent.edge_list)
                 print(agent.capture())
                 while not agent.capture():
                     if verbose:
@@ -94,9 +95,15 @@ class Simulation(object):
                     images = []
                     for fig in figs:
                         images.append(imageio.imread("../results/figs/" + fig))
-                    imageio.mimsave(
-                        "../results/videos/{}.mp4".format(Agent.__name__), images, fps=2
-                    )
+                    try:
+                        # since sometimes we need 0 steps to find the target, which means there is no figs
+                        imageio.mimsave(
+                            "../results/videos/{}-{}.mp4".format(Agent.__name__, i + 1),
+                            images,
+                            fps=2,
+                        )
+                    except:
+                        pass
                     # delete all the figs
                     for fig in figs:
                         os.remove("../results/figs/" + fig)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from random import sample
+from random import sample, seed
 from datetime import datetime
 import matplotlib.pyplot as plt
 from abc import ABC, abstractmethod
@@ -29,7 +29,9 @@ class Graph(ABC):
         # when you need to access a node, use self.node_list[self.name_id_dict[node_name]]
         self.color_dict = {0: "black", 1: "blue", 2: "red"}
 
-    def initialize(self):
+    def initialize(self, random_seed=0):
+        np.random.seed(random_seed)
+        seed(random_seed)
         name_list = [i for i in range(1, self.node_num + 1)]
         neighbor_dict = {}  # key: node name, value: neighbor list (also use name)
 
